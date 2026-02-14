@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
-import { Page } from './types';
-import LandingPage from './components/LandingPage';
-import TravelPage from './components/TravelPage';
-import BackgroundHearts from './components/BackgroundHearts';
+import React, { useState } from 'react';
+import { Page } from './types.ts';
+import LandingPage from './components/LandingPage.tsx';
+import TravelPage from './components/TravelPage.tsx';
+import BackgroundHearts from './components/BackgroundHearts.tsx';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Landing);

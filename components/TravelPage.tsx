@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plane, MapPin, Camera } from 'lucide-react';
-import Fireworks from './Fireworks';
-import { DESTINATIONS, Destination } from '../types';
+import Fireworks from './Fireworks.tsx';
+import { DESTINATIONS, Destination } from '../types.ts';
 
 const GlobeMarker: React.FC<{ 
   destination: Destination; 
@@ -93,7 +93,11 @@ const TravelPage: React.FC = () => {
           <path d="M 100 350 Q 500 100 900 350" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="2" strokeDasharray="10,10" />
           <path id="arcPath" d="M 100 350 Q 500 100 900 350" fill="none" stroke="url(#arcGradient)" strokeWidth="4" strokeDasharray="10,10"
             className="transition-all duration-1000"
-            style={{ strokeDashoffset: currentIdx === -1 ? 1000 : 0, opacity: currentIdx === -1 ? 0 : 0.4 }}
+            style={{ 
+              strokeDashoffset: currentIdx === -1 ? 1000 : 0, 
+              opacity: currentIdx === -1 ? 0 : 0.4,
+              transition: 'opacity 1s ease, stroke-dashoffset 4s linear'
+            }}
           />
           <defs>
             <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -132,10 +136,11 @@ const TravelPage: React.FC = () => {
 };
 
 function getMarkerPos(index: number) {
+  const totalDestinations = DESTINATIONS.length;
   const angleStart = 150; 
   const angleEnd = 30;
   const angleRange = angleStart - angleEnd;
-  const angle = angleStart - (index * (angleRange / 2));
+  const angle = angleStart - (index * (angleRange / (totalDestinations - 1)));
   const radian = (angle * Math.PI) / 180;
   const radiusX = 40;
   const radiusY = 30;
