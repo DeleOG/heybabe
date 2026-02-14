@@ -6,16 +6,48 @@ interface LandingPageProps {
   onNext: () => void;
 }
 
+interface PolaroidProps {
+  image: string | null;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+  rotation: string;
+}
+
+const Polaroid: React.FC<PolaroidProps> = ({ image, onUpload, label, rotation }) => (
+  <div className={`relative group w-full aspect-[4/5] max-w-[200px] rounded-lg p-2 bg-white shadow-lg border border-rose-100 transition-all duration-500 hover:rotate-0 hover:scale-105 hover:z-10 ${rotation}`}>
+    <div className="w-full h-full rounded overflow-hidden bg-rose-50 relative flex items-center justify-center border border-dashed border-rose-200">
+      {image ? (
+        <img src={image} alt={label} className="w-full h-full object-cover" />
+      ) : (
+        <div className="text-rose-300 flex flex-col items-center">
+          <Camera size={24} strokeWidth={1} />
+          <p className="font-satisfy text-xs mt-1">{label}</p>
+        </div>
+      )}
+      <div className="absolute inset-0 bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <label className="absolute inset-0 cursor-pointer">
+        <input type="file" className="hidden" accept="image/*" onChange={onUpload} />
+      </label>
+    </div>
+    {/* Polish frame effects */}
+    <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-sm text-rose-500">
+      <Heart size={12} fill="currentColor" />
+    </div>
+  </div>
+);
+
 const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
+  const [images, setImages] = useState<(string | null)[]>([null, null, null]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result as string);
+        const newImages = [...images];
+        newImages[index] = reader.result as string;
+        setImages(newImages);
       };
       reader.readAsDataURL(file);
     }
@@ -33,7 +65,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
       )}
 
       {/* Envelope Container */}
-      <div className={`relative w-full max-w-4xl transition-all duration-1000 transform ${isOpen ? 'scale-100 h-auto my-12' : 'scale-90 h-[400px]'}`}>
+      <div className={`relative w-full max-w-5xl transition-all duration-1000 transform ${isOpen ? 'scale-100 h-auto my-8' : 'scale-90 h-[400px]'}`}>
         
         {/* The Realistic Envelope */}
         {!isOpen ? (
@@ -56,15 +88,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
           </div>
         ) : (
           /* Revealed Content */
-          <div className="w-full bg-[#fffcf9] rounded-2xl shadow-[0_20px_50px_rgba(255,182,193,0.3)] p-8 md:p-12 border border-rose-100 animate-in fade-in zoom-in duration-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="w-full bg-[#fffcf9] rounded-2xl shadow-[0_20px_50px_rgba(255,182,193,0.3)] p-6 md:p-10 border border-rose-100 animate-in fade-in zoom-in duration-700">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 items-start">
               {/* Left Side - Written Letter */}
               <div className="space-y-6 text-slate-700">
                 <div className="flex items-center gap-2 mb-4">
                    <Heart className="text-rose-400 fill-rose-400 w-6 h-6" />
                    <h2 className="font-satisfy text-3xl text-rose-500">My Dearest...</h2>
                 </div>
-                <div className="font-handwritten text-2xl leading-relaxed space-y-4">
+                <div className="font-handwritten text-xl md:text-2xl leading-relaxed space-y-4">
                   <p>Hey Babe,</p>
                   <p>Knowing you is knowing Grace.</p>
                   <p>Ever since we started this love thingy, it has inspired me in many ways and I'm glad I get to do it with you.</p>
@@ -76,36 +108,43 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                 </div>
               </div>
 
-              {/* Right Side - Image Area */}
-              <div className="flex flex-col items-center justify-center space-y-6">
-                <div className="relative group w-full aspect-[4/5] max-w-[320px] rounded-2xl p-4 bg-white shadow-xl border border-rose-100 rotate-2 hover:rotate-0 transition-transform duration-500">
-                  <div className="w-full h-full rounded-lg overflow-hidden bg-rose-50 relative flex items-center justify-center border border-dashed border-rose-200">
-                    {image ? (
-                      <img src={image} alt="Our Memories" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="text-rose-300 flex flex-col items-center">
-                        <Camera size={48} strokeWidth={1} />
-                        <p className="font-satisfy text-xl mt-2">Our Picture</p>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              {/* Right Side - Photo Collage */}
+              <div className="relative flex flex-col items-center">
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  <div className="col-span-2 flex justify-center">
+                    <Polaroid 
+                      image={images[0]} 
+                      onUpload={handleImageUpload(0)} 
+                      label="Us" 
+                      rotation="-rotate-3" 
+                    />
                   </div>
-                  {/* Polish frame effects */}
-                  <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-md text-rose-500">
-                    <Heart size={20} fill="currentColor" />
+                  <div className="flex justify-end">
+                    <Polaroid 
+                      image={images[1]} 
+                      onUpload={handleImageUpload(1)} 
+                      label="Smile" 
+                      rotation="rotate-6 translate-y-[-10px]" 
+                    />
+                  </div>
+                  <div className="flex justify-start">
+                    <Polaroid 
+                      image={images[2]} 
+                      onUpload={handleImageUpload(2)} 
+                      label="Love" 
+                      rotation="-rotate-6 translate-y-[10px]" 
+                    />
                   </div>
                 </div>
-
-                <label className="cursor-pointer bg-rose-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-rose-600 hover:shadow-rose-200 transition-all flex items-center gap-2 font-montserrat font-bold text-xs uppercase tracking-widest">
-                  <Camera size={14} />
-                  <span>Update Photo</span>
-                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                </label>
+                
+                <p className="mt-8 font-satisfy text-rose-400 text-lg italic animate-pulse">
+                  Click on the frames to add our pictures...
+                </p>
               </div>
             </div>
 
             {/* Bottom Button */}
-            <div className="mt-16 flex justify-center">
+            <div className="mt-12 flex justify-center">
               <button
                 onClick={onNext}
                 className="group flex items-center gap-3 bg-white border-2 border-rose-400 text-rose-500 px-8 py-4 rounded-full font-bold shadow-lg hover:bg-rose-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1 font-montserrat uppercase tracking-widest text-sm"
