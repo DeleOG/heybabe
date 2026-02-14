@@ -62,17 +62,26 @@ const TravelPage: React.FC = () => {
   const [showFireworks, setShowFireworks] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
 
+  // Animation configuration
+  const LEG_DURATION = 2500; // Speed of each leg in ms (was 4000)
+
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
-    timers.push(setTimeout(() => setCurrentIdx(0), 1000));
+    
+    // Initial delay before first destination
+    timers.push(setTimeout(() => setCurrentIdx(0), 800));
+    
+    // Schedule subsequent destinations
     DESTINATIONS.forEach((_, i) => {
       if (i > 0) {
-        timers.push(setTimeout(() => setCurrentIdx(i), 1000 + i * 4000));
+        timers.push(setTimeout(() => setCurrentIdx(i), 800 + i * LEG_DURATION));
       }
     });
-    const finishTime = 1000 + DESTINATIONS.length * 4000;
+
+    const finishTime = 800 + DESTINATIONS.length * LEG_DURATION;
     timers.push(setTimeout(() => setIsFinishing(true), finishTime));
     timers.push(setTimeout(() => setShowFireworks(true), finishTime + 500));
+    
     return () => timers.forEach(clearTimeout);
   }, []);
 
@@ -96,7 +105,7 @@ const TravelPage: React.FC = () => {
             style={{ 
               strokeDashoffset: currentIdx === -1 ? 1000 : 0, 
               opacity: currentIdx === -1 ? 0 : 0.4,
-              transition: 'opacity 1s ease, stroke-dashoffset 4s linear'
+              transition: `opacity 1s ease, stroke-dashoffset ${LEG_DURATION}ms linear`
             }}
           />
           <defs>
@@ -106,8 +115,13 @@ const TravelPage: React.FC = () => {
           </defs>
         </svg>
         {currentIdx >= 0 && !isFinishing && (
-          <div className="absolute z-50 transition-all duration-[3500ms] ease-in-out"
-            style={{ left: `${getMarkerPos(currentIdx).x}%`, top: `${getMarkerPos(currentIdx).y}%`, transform: 'translate(-50%, -50%)' }}>
+          <div className="absolute z-50 transition-all ease-in-out"
+            style={{ 
+              left: `${getMarkerPos(currentIdx).x}%`, 
+              top: `${getMarkerPos(currentIdx).y}%`, 
+              transform: 'translate(-50%, -50%)',
+              transitionDuration: `${LEG_DURATION * 0.8}ms` 
+            }}>
              <div className="relative">
                 <Plane className="text-white fill-rose-500 w-12 h-12 md:w-20 md:h-20 drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] animate-pulse" />
                 <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-6 h-6 bg-rose-400 rounded-full blur-md animate-ping" />
