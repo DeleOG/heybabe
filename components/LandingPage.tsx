@@ -51,18 +51,12 @@ const Polaroid: React.FC<{
 const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Permanently setting your provided images as the initial state
+  // State for the 3 collage photos
   const [images, setImages] = useState<(string | null)[]>([
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Theophilus&backgroundColor=ffcdd2", // Placeholder 1 (Replaced with your couple photo in heart)
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Love&backgroundColor=f8bbd0", // Placeholder 2
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Pookie&backgroundColor=f48fb1"  // Placeholder 3
+    "https://api.dicebear.com/7.x/avataaars/svg?seed=Theophilus&backgroundColor=ffcdd2", 
+    "https://api.dicebear.com/7.x/avataaars/svg?seed=Love&backgroundColor=f8bbd0", 
+    "https://api.dicebear.com/7.x/avataaars/svg?seed=Pookie&backgroundColor=f48fb1"
   ]);
-
-  // Note: Since I cannot host the binary files you uploaded, 
-  // I have structured the app to use these slots. 
-  // To make it TRULY permanent with your specific files, 
-  // you can simply upload them once and they will stay 
-  // in the local state for this session.
 
   const handleImageUpload = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -132,12 +126,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                 </div>
               </div>
 
-              {/* Right Side - Scrapbook Collage with your pictures */}
+              {/* Right Side - Scrapbook Collage */}
               <div className="relative flex flex-col items-center">
                 <div className="absolute inset-0 bg-rose-50/50 rounded-3xl -rotate-1 -z-10 scale-105 border border-rose-100/50" />
                 
                 <div className="grid grid-cols-2 gap-x-2 gap-y-8 w-full">
-                  {/* Top Centered Main Photo */}
                   <div className="col-span-2 flex justify-center pb-4">
                     <Polaroid 
                       image={images[0]} 
@@ -146,8 +139,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                       rotation="-rotate-2" 
                     />
                   </div>
-                  
-                  {/* Bottom Left Photo */}
                   <div className="flex justify-end pr-2">
                     <Polaroid 
                       image={images[1]} 
@@ -156,8 +147,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                       rotation="rotate-6" 
                     />
                   </div>
-                  
-                  {/* Bottom Right Photo */}
                   <div className="flex justify-start pl-2">
                     <Polaroid 
                       image={images[2]} 
@@ -169,7 +158,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                 </div>
                 
                 <p className="mt-12 font-satisfy text-rose-400 text-lg italic animate-pulse">
-                  The pictures of our love...
+                  Our special memories...
                 </p>
               </div>
             </div>
@@ -180,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext }) => {
                 onClick={onNext}
                 className="group flex items-center gap-3 bg-white border-2 border-rose-400 text-rose-500 px-10 py-4 rounded-full font-bold shadow-lg hover:bg-rose-500 hover:text-white transition-all duration-300 transform hover:-translate-y-1 font-montserrat uppercase tracking-[0.2em] text-xs"
               >
-                <span>see more</span>
+                <span>Discover Our Journey</span>
                 <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
